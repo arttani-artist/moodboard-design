@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>moodboard → design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:wght@400;600&family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=Fraunces:wght@400;700&family=Lilita+One&family=Nunito:wght@400;600&family=Playfair+Display:wght@400;700&family=Righteous&family=Source+Sans+3:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="noise"></div>
+
+  <header class="site-header">
+    <span class="logo">✦ moodboard</span>
+    <span class="tagline">type ur vibe. get ur design.</span>
+  </header>
+
+  <main class="main">
+
+    <!-- mood input -->
+    <section class="input-section">
+      <div class="input-wrapper">
+        <input
+          id="moodInput"
+          class="mood-input"
+          type="text"
+          placeholder="dark editorial noir, cozy coffee shop, clean minimalist tech…"
+          autocomplete="off"
+        />
+        <button class="gen-btn" id="genBtn" onclick="generate()">generate ✦</button>
+      </div>
+
+      <div class="chips" id="chips">
+        <button class="chip" onclick="setPreset('dark moody editorial high contrast')">🖤 dark editorial</button>
+        <button class="chip" onclick="setPreset('warm cozy soft minimal')">🍂 cozy warm</button>
+        <button class="chip" onclick="setPreset('clean sharp executionist tech')">⚡ clean tech</button>
+        <button class="chip" onclick="setPreset('playful colorful bubbly fun')">🎨 playful bold</button>
+        <button class="chip" onclick="setPreset('elegant luxury refined premium')">✦ luxury</button>
+        <button class="chip" onclick="setPreset('fresh natural organic earthy')">🌿 earthy</button>
+        <button class="chip" onclick="setPreset('retro vintage nostalgic warm')">📼 retro</button>
+        <button class="chip" onclick="setPreset('cold clinical minimal white space')">🧊 clinical</button>
+      </div>
+    </section>
+
+    <!-- sliders -->
+    <section class="sliders-section">
+      <div class="sliders-grid">
+        <div class="slider-item">
+          <div class="slider-meta">
+            <span class="slider-emoji">🌑</span>
+            <span class="slider-label">darkness</span>
+            <span class="slider-val" id="darkVal">50</span>
+          </div>
+          <input type="range" min="0" max="100" value="50" id="darkSlider" oninput="onSlider('darkVal',this.value)" />
+          <div class="slider-ends"><span>light</span><span>dark</span></div>
+        </div>
+        <div class="slider-item">
+          <div class="slider-meta">
+            <span class="slider-emoji">🌡️</span>
+            <span class="slider-label">warmth</span>
+            <span class="slider-val" id="warmVal">50</span>
+          </div>
+          <input type="range" min="0" max="100" value="50" id="warmSlider" oninput="onSlider('warmVal',this.value)" />
+          <div class="slider-ends"><span>cool</span><span>warm</span></div>
+        </div>
+        <div class="slider-item">
+          <div class="slider-meta">
+            <span class="slider-emoji">💥</span>
+            <span class="slider-label">boldness</span>
+            <span class="slider-val" id="boldVal">50</span>
+          </div>
+          <input type="range" min="0" max="100" value="50" id="boldSlider" oninput="onSlider('boldVal',this.value)" />
+          <div class="slider-ends"><span>subtle</span><span>loud</span></div>
+        </div>
+        <div class="slider-item">
+          <div class="slider-meta">
+            <span class="slider-emoji">🎭</span>
+            <span class="slider-label">playfulness</span>
+            <span class="slider-val" id="playVal">50</span>
+          </div>
+          <input type="range" min="0" max="100" value="50" id="playSlider" oninput="onSlider('playVal',this.value)" />
+          <div class="slider-ends"><span>serious</span><span>fun</span></div>
+        </div>
+        <div class="slider-item">
+          <div class="slider-meta">
+            <span class="slider-emoji">✂️</span>
+            <span class="slider-label">sharpness</span>
+            <span class="slider-val" id="sharpVal">50</span>
+          </div>
+          <input type="range" min="0" max="100" value="50" id="sharpSlider" oninput="onSlider('sharpVal',this.value)" />
+          <div class="slider-ends"><span>rounded</span><span>sharp</span></div>
+        </div>
+        <div class="slider-item">
+          <div class="slider-meta">
+            <span class="slider-emoji">🫧</span>
+            <span class="slider-label">density</span>
+            <span class="slider-val" id="densVal">50</span>
+          </div>
+          <input type="range" min="0" max="100" value="50" id="densSlider" oninput="onSlider('densVal',this.value)" />
+          <div class="slider-ends"><span>airy</span><span>dense</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- output -->
+    <section class="output" id="output">
+
+      <div class="out-block">
+        <div class="out-label">🎨 palette</div>
+        <div class="palette-row" id="paletteRow"></div>
+      </div>
+
+      <div class="out-block">
+        <div class="out-label">✦ tokens</div>
+        <div class="token-grid" id="tokenGrid"></div>
+      </div>
+
+      <div class="out-block">
+        <div class="out-label">👁 live preview</div>
+        <div class="preview-card" id="previewCard">
+          <p class="preview-eyebrow" id="prevEyebrow">design system</p>
+          <h2 class="preview-heading" id="prevHeading">your heading looks like this</h2>
+          <p class="preview-body" id="prevBody">body text will sit at this weight, this size, and this line-height. if it doesn't feel right, mess with the sliders until it does.</p>
+          <div class="preview-tags">
+            <span class="preview-tag" id="prevTag1">tag one</span>
+            <span class="preview-tag" id="prevTag2">tag two</span>
+          </div>
+          <button class="preview-btn" id="prevBtn">primary action</button>
+        </div>
+      </div>
+
+      <div class="out-block">
+        <div class="out-label-row">
+          <span class="out-label">📋 css variables</span>
+          <button class="copy-btn" id="copyCSS" onclick="copyCode('cssBox','copyCSS')">copy</button>
+        </div>
+        <pre class="code-box" id="cssBox"></pre>
+      </div>
+
+      <div class="out-block">
+        <div class="out-label-row">
+          <span class="out-label">🔧 tailwind config</span>
+          <button class="copy-btn" id="copyTW" onclick="copyCode('twBox','copyTW')">copy</button>
+        </div>
+        <pre class="code-box" id="twBox"></pre>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
