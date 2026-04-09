@@ -1,3 +1,7 @@
+/* ─
+   moodboard → design system
+   style.css
+─ */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -43,7 +47,7 @@ body {
   background-size: 180px;
 }
 
-/* header */
+/*  header  */
 .site-header {
   position: relative;
   z-index: 10;
@@ -67,7 +71,7 @@ body {
   letter-spacing: 0.04em;
 }
 
-/* main */
+/*  main  */
 .main {
   position: relative;
   z-index: 10;
@@ -76,7 +80,7 @@ body {
   padding: 3rem 1.5rem 6rem;
 }
 
-/*  mood input */
+/*  mood input  */
 .input-section {
   margin-bottom: 2.5rem;
 }
