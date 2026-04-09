@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
   Object.keys(sliders).forEach(function (key) {
     sliders[key].range.addEventListener('input', function () {
       sliders[key].val.textContent = this.value;
+      applyVibeToSite();
       if (output.classList.contains('visible')) {
         generate();
       }
@@ -112,6 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 
+
   function buildSystem() {
     var dark  = getVal('dark');
     var warm  = getVal('warm');
@@ -169,7 +171,6 @@ document.addEventListener('DOMContentLoaded', function () {
       letterSpacing: letterSpacing,
     };
   }
-
 
 
   function generate() {
@@ -275,6 +276,8 @@ document.addEventListener('DOMContentLoaded', function () {
     ].join('\n');
 
     // tailwind output
+    applyVibeToSite(sys);
+
     document.getElementById('twBox').textContent = [
       '// tailwind.config.js',
       'module.exports = {',
@@ -304,6 +307,74 @@ document.addEventListener('DOMContentLoaded', function () {
     ].join('\n');
   }
 
+
+
+  function applyVibeToSite(sys) {
+    if (!sys) sys = buildSystem();
+
+    var root = document.documentElement;
+
+    // backgrounds
+    root.style.setProperty('--bg',      sys.bg);
+    root.style.setProperty('--surface', sys.surface);
+    root.style.setProperty('--border',  hexToRgba(sys.neutral, 0.35));
+
+    // text: derive from bg luminance so it always contrasts
+    var isDark = hexLuminance(sys.bg) < 0.15;
+    var textBase  = isDark ? '#f4f1ec' : '#1a1a18';
+    var textMuted = isDark ? 'rgba(244,241,236,0.5)' : 'rgba(26,26,24,0.5)';
+    var textFaint = isDark ? 'rgba(244,241,236,0.22)' : 'rgba(26,26,24,0.18)';
+    root.style.setProperty('--text',       textBase);
+    root.style.setProperty('--text-muted', textMuted);
+    root.style.setProperty('--text-faint', textFaint);
+
+    // accent
+    root.style.setProperty('--accent', sys.accent);
+
+    root.style.setProperty('--radius-sm', Math.max(2, sys.radius - 4) + 'px');
+    root.style.setProperty('--radius-md', sys.radius + 'px');
+    root.style.setProperty('--radius-lg', Math.min(sys.radius * 2, 32) + 'px');
+
+    // fonts
+    root.style.setProperty('--font-body',    sys.fonts.body + ', sans-serif');
+    root.style.setProperty('--font-display', sys.fonts.heading + ', serif');
+
+    updateSliderTrackColor(sys);
+  }
+
+  function hexToRgba(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16);
+    var g = parseInt(hex.slice(3, 5), 16);
+    var b = parseInt(hex.slice(5, 7), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
+  function updateSliderTrackColor(sys) {
+    var styleId = 'vibe-thumb-style';
+    var existing = document.getElementById(styleId);
+    if (!existing) {
+      existing = document.createElement('style');
+      existing.id = styleId;
+      document.head.appendChild(existing);
+    }
+    var thumbColor = sys.accent;
+    var bgColor    = sys.bg;
+    existing.textContent = [
+      'input[type="range"]::-webkit-slider-thumb {',
+      '  background: ' + thumbColor + ';',
+      '  border-color: ' + bgColor + ';',
+      '}',
+      'input[type="range"]::-moz-range-thumb {',
+      '  background: ' + thumbColor + ';',
+      '  border-color: ' + bgColor + ';',
+      '}',
+      '.gen-btn {',
+      '  background: ' + thumbColor + ';',
+      '  color: ' + contrastColor(thumbColor) + ';',
+      '}',
+    ].join('\n');
+  }
+
   function copyCode(boxId, btn) {
     var text = document.getElementById(boxId).textContent;
     navigator.clipboard.writeText(text).then(function () {
@@ -313,4 +384,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-}); // end DOMContentLoaded
+}); 
