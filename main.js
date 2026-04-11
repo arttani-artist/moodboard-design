@@ -16,12 +16,14 @@ document.addEventListener('DOMContentLoaded', function () {
     dens:  { range: document.getElementById('densSlider'),  val: document.getElementById('densVal')  },
   };
 
+  var busy = false;
+
   Object.keys(sliders).forEach(function (key) {
     sliders[key].range.addEventListener('input', function () {
       sliders[key].val.textContent = this.value;
-      applyVibeToSite();
-      if (output.classList.contains('visible')) {
-        generate();
+      if (!busy) {
+        applyVibeToSite();
+        if (output.classList.contains('visible')) generate();
       }
     });
   });
@@ -48,8 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
   copyTW.addEventListener('click', function () {
     copyCode('twBox', copyTW);
   });
-
-
 
   function hslToHex(h, s, l) {
     s /= 100; l /= 100;
@@ -174,6 +174,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   function generate() {
+    if (busy) return;
+    busy = true;
     var text = moodInput.value.trim();
     if (text) parseKeywords(text);
 
@@ -217,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
         + '</div>';
     }).join('');
 
-    // live preview
     var card = document.getElementById('previewCard');
     card.style.background   = sys.bg;
     card.style.borderColor  = sys.neutral;
@@ -275,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function () {
       '}',
     ].join('\n');
 
-    // tailwind output
     applyVibeToSite(sys);
 
     document.getElementById('twBox').textContent = [
@@ -305,9 +305,9 @@ document.addEventListener('DOMContentLoaded', function () {
       '  },',
       '}',
     ].join('\n');
+
+    busy = false;
   }
-
-
 
   function applyVibeToSite(sys) {
     if (!sys) sys = buildSystem();
@@ -319,7 +319,6 @@ document.addEventListener('DOMContentLoaded', function () {
     root.style.setProperty('--surface', sys.surface);
     root.style.setProperty('--border',  hexToRgba(sys.neutral, 0.35));
 
-    // text: derive from bg luminance so it always contrasts
     var isDark = hexLuminance(sys.bg) < 0.15;
     var textBase  = isDark ? '#f4f1ec' : '#1a1a18';
     var textMuted = isDark ? 'rgba(244,241,236,0.5)' : 'rgba(26,26,24,0.5)';
@@ -328,7 +327,6 @@ document.addEventListener('DOMContentLoaded', function () {
     root.style.setProperty('--text-muted', textMuted);
     root.style.setProperty('--text-faint', textFaint);
 
-    // accent
     root.style.setProperty('--accent', sys.accent);
 
     root.style.setProperty('--radius-sm', Math.max(2, sys.radius - 4) + 'px');
@@ -384,4 +382,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-}); 
+});
